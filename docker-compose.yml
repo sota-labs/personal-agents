@@ -4,7 +4,7 @@ services:
     build:
       context: .
     ports:
-      - "4009:4009"
+      - "4012:4012"
     volumes:
       - ./:/app
     env_file:

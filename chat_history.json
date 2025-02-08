@@ -1,1 +1,32 @@
-{}
+{
+  "thread_123": [
+    {
+      "role": "user",
+      "content": "hi",
+      "time": "2025-02-08 10:20:09",
+      "message_id": "msg_123",
+      "thread_id": "thread_123"
+    },
+    {
+      "role": "assistant",
+      "content": "Hi there! How can I help you today?",
+      "time": "2025-02-08 10:20:09",
+      "message_id": "msg_123",
+      "thread_id": "thread_123"
+    },
+    {
+      "role": "user",
+      "content": "hi",
+      "time": "2025-02-08 10:20:18",
+      "message_id": "msg_123",
+      "thread_id": "thread_123"
+    },
+    {
+      "role": "assistant",
+      "content": "Hi there! How can I help you today?",
+      "time": "2025-02-08 10:20:18",
+      "message_id": "msg_123",
+      "thread_id": "thread_123"
+    }
+  ]
+}

@@ -28,7 +28,7 @@ from prompts.react import REACT_CHAT_SYSTEM_HEADER_CUSTOM
 from LLM.llm_settings_manager import LLMSettingsManager
 
 llm_manager = LLMSettingsManager()
-llm = llm_manager.get_llm("anthropic", model="claude-3-5-sonnet-20241022")
+llm = llm_manager.get_llm("gemini", model="models/gemini-1.5-flash")
 
 class CustomReActChatFormatter(ReActChatFormatter):
     """ReAct chat formatter."""
@@ -135,41 +135,41 @@ tools = [
             "- Select appropriate wallet for transactions"
         ),
     ),
-    FunctionTool.from_defaults(
-        fn=search_token,
-        name="search_token",
-        description=(
-            "Retrieves the token address based on the token name, symbol, or ticker."
-            """Input args: 
-                query (str): Token name, symbol, or ticker (e.g., 'SUDENG', 'hippo').
-                jwt_token (str): User's authorization token"""
-            "Output: Returns token information including:"
-            "- Token address (contract address)"
-            "- Token name"
-            "- Token symbol"
-            "- Token price"
-            "- Liquidity (liquidityUsd)"
-        ),
-    ),
-    FunctionTool.from_defaults(
-        fn=get_all_positions,
-        name="get_all_positions",
-        description=(
-            "Get all positions from user's wallets. Returns detailed information including:"
-            "- Token symbol"
-            "- Token name" 
-            "- Token contract address"
-            "- Token balance"
-            "- Wallet address holding the token"
-            """Input args:
-                jwt_token (str): User's authorization token"""
-            "Use this tool when:"
-            "- Need an overview of all tokens in wallets"
-            "- Want to check balances of multiple tokens at once"
-            "- Analyzing investment portfolio"
-            "- Preparing for multi-token management"
-        ),
-    ),
+    # FunctionTool.from_defaults(
+    #     fn=search_token,
+    #     name="search_token",
+    #     description=(
+    #         "Retrieves the token address based on the token name, symbol, or ticker."
+    #         """Input args: 
+    #             query (str): Token name, symbol, or ticker (e.g., 'SUDENG', 'hippo').
+    #             jwt_token (str): User's authorization token"""
+    #         "Output: Returns token information including:"
+    #         "- Token address (contract address)"
+    #         "- Token name"
+    #         "- Token symbol"
+    #         "- Token price"
+    #         "- Liquidity (liquidityUsd)"
+    #     ),
+    # ),
+    # FunctionTool.from_defaults(
+    #     fn=get_all_positions,
+    #     name="get_all_positions",
+    #     description=(
+    #         "Get all positions from user's wallets. Returns detailed information including:"
+    #         "- Token symbol"
+    #         "- Token name" 
+    #         "- Token contract address"
+    #         "- Token balance"
+    #         "- Wallet address holding the token"
+    #         """Input args:
+    #             jwt_token (str): User's authorization token"""
+    #         "Use this tool when:"
+    #         "- Need an overview of all tokens in wallets"
+    #         "- Want to check balances of multiple tokens at once"
+    #         "- Analyzing investment portfolio"
+    #         "- Preparing for multi-token management"
+    #     ),
+    # ),
 ]
 
 
