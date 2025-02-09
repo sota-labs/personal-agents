@@ -1,32 +1,44 @@
 {
-  "thread_123": [
+  "2104920255": [
     {
       "role": "user",
-      "content": "hi",
-      "time": "2025-02-08 10:20:09",
-      "message_id": "msg_123",
-      "thread_id": "thread_123"
+      "content": "xin chào",
+      "time": "2025-02-09 10:44:07"
     },
     {
       "role": "assistant",
-      "content": "Hi there! How can I help you today?",
-      "time": "2025-02-08 10:20:09",
-      "message_id": "msg_123",
-      "thread_id": "thread_123"
+      "content": "Xin chào! How can I help you today?",
+      "time": "2025-02-09 10:44:07"
     },
     {
       "role": "user",
-      "content": "hi",
-      "time": "2025-02-08 10:20:18",
-      "message_id": "msg_123",
-      "thread_id": "thread_123"
+      "content": "các token thịnh hành là token nào",
+      "time": "2025-02-09 10:44:29"
     },
     {
       "role": "assistant",
-      "content": "Hi there! How can I help you today?",
-      "time": "2025-02-08 10:20:18",
-      "message_id": "msg_123",
-      "thread_id": "thread_123"
+      "content": "The trending tokens are CHIRP (Chirp Token) and BUT (Bucket Token).  CHIRP has a price of $0.08711401204327325 and BUT has a price of $0.012694385473175314.",
+      "time": "2025-02-09 10:44:29"
+    },
+    {
+      "role": "user",
+      "content": "thịnh hành trong 24h",
+      "time": "2025-02-09 10:45:23"
+    },
+    {
+      "role": "assistant",
+      "content": "The top trending tokens in the last 24 hours are:\n\n1. SUAI (SuiAI): +59.52%\n2. BUT (Bucket Token): +5.50%\n3. S (Agent S): +7.91%\n4. SPLASH (Splash AI): +49.80%\n5. DMC (DeLorean DMC Token): -39.81%",
+      "time": "2025-02-09 10:45:23"
+    },
+    {
+      "role": "user",
+      "content": "giá SUAI đang là bao nhiêu",
+      "time": "2025-02-09 10:47:36"
+    },
+    {
+      "role": "assistant",
+      "content": "The current price of SUAI is $0.007810853780814432.",
+      "time": "2025-02-09 10:47:36"
     }
   ]
 }

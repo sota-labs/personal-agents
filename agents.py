@@ -22,13 +22,14 @@ from tools import (
     get_wallet_balance,
     search_token,
     get_all_positions,
+    get_trending_pairs,
 )
 
 from prompts.react import REACT_CHAT_SYSTEM_HEADER_CUSTOM
 from LLM.llm_settings_manager import LLMSettingsManager
 
 llm_manager = LLMSettingsManager()
-llm = llm_manager.get_llm("gemini", model="models/gemini-1.5-flash")
+llm = llm_manager.get_llm("gemini", model="models/gemini-1.5-pro")
 
 class CustomReActChatFormatter(ReActChatFormatter):
     """ReAct chat formatter."""
@@ -135,22 +136,43 @@ tools = [
             "- Select appropriate wallet for transactions"
         ),
     ),
-    # FunctionTool.from_defaults(
-    #     fn=search_token,
-    #     name="search_token",
-    #     description=(
-    #         "Retrieves the token address based on the token name, symbol, or ticker."
-    #         """Input args: 
-    #             query (str): Token name, symbol, or ticker (e.g., 'SUDENG', 'hippo').
-    #             jwt_token (str): User's authorization token"""
-    #         "Output: Returns token information including:"
-    #         "- Token address (contract address)"
-    #         "- Token name"
-    #         "- Token symbol"
-    #         "- Token price"
-    #         "- Liquidity (liquidityUsd)"
-    #     ),
-    # ),
+    FunctionTool.from_defaults(
+        fn=get_trending_pairs,
+        name="get_trending_pairs", 
+        description=(
+            "Retrieves a list of trending trading pairs on the market."
+            """Input args:
+                jwt_token (str): User's authorization token
+                resolution (str, optional): Time frame (default: "5m")
+                limit (int, optional): Maximum number of pairs to return (default: 5)"""
+            "Output: Returns detailed information about trading pairs including:"
+            "- Token information (address, name, symbol, USD price)"
+            "- Liquidity (liquidityUsd)"
+            "- Trading volume (volumeUsd)"
+            "- Price change percentages (5m, 1h, 6h, 24h)"
+            "\nUse this tool when you want to:"
+            "- View trending tokens in the market"
+            "- Analyze market trends"
+            "- Find new trading opportunities"
+            "- Monitor token price movements"
+        ),
+    ),
+    FunctionTool.from_defaults(
+        fn=search_token,
+        name="search_token",
+        description=(
+            "Retrieves the token address based on the token name, symbol, or ticker."
+            """Input args: 
+                query (str): Token name, symbol, or ticker (e.g., 'SUDENG', 'hippo').
+                jwt_token (str): User's authorization token"""
+            "Output: Returns token information including:"
+            "- Token address (contract address)"
+            "- Token name"
+            "- Token symbol"
+            "- Token price"
+            "- Liquidity (liquidityUsd)"
+        ),
+    ),
     # FunctionTool.from_defaults(
     #     fn=get_all_positions,
     #     name="get_all_positions",
@@ -192,7 +214,15 @@ def react_chat(
     )
     agent.update_prompts({"agent_worker:system_prompt": react_system_prompt})
     response = agent.chat(query)
+    
+    
+    # start task
+    # task = agent.create_task(query)
+    # print(f'task: {task}')
+    # step_output = agent.run_step(task.task_id)
+    # print(f'step_output.output: {step_output.output}')
+    
+    
     response = str(response)
-
     agent.reset()
     return response
