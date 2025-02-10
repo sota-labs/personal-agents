@@ -41,6 +41,34 @@
       "time": "2025-02-09 23:40:01",
       "message_id": "msg_123",
       "thread_id": "thread_123"
+    },
+    {
+      "role": "user",
+      "content": "hi",
+      "time": "2025-02-10 15:32:27",
+      "message_id": "msg_123",
+      "thread_id": "thread_123"
+    },
+    {
+      "role": "assistant",
+      "content": "Hello! How can I help you today?",
+      "time": "2025-02-10 15:32:27",
+      "message_id": "msg_123",
+      "thread_id": "thread_123"
+    },
+    {
+      "role": "user",
+      "content": "hi",
+      "time": "2025-02-10 15:32:34",
+      "message_id": "msg_123",
+      "thread_id": "thread_123"
+    },
+    {
+      "role": "assistant",
+      "content": "Hello! How can I help you today?",
+      "time": "2025-02-10 15:32:34",
+      "message_id": "msg_123",
+      "thread_id": "thread_123"
     }
   ]
 }

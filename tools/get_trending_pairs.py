@@ -34,7 +34,7 @@ def get_trending_pairs(jwt_token: str = "", resolution: str = "5m", limit: int =
                     - 24h (float): 24-hour change
     """
     try:
-        if limit <= 0:
+        if limit <= 0 or limit > 5:
             limit = 5
             
         valid_resolutions = ["5m", "1h", "6h", "24h"]
@@ -58,20 +58,35 @@ def get_trending_pairs(jwt_token: str = "", resolution: str = "5m", limit: int =
         
         if response.status_code == 200:
             data = response.json()
+            
+            sorted_data = sorted(data, key=lambda x: float(x.get('liquidityUsd', 0)), reverse=True)
+            
             pairs = []
             
-            for pair in data:
+            for pair in sorted_data[:limit]:
+                price_usd = float(pair.get('tokenBase', {}).get('priceUsd', 0))
+                liquidity_usd = float(pair.get('liquidityUsd', 0))
+                volume_usd = float(pair.get('volumeUsd', 0))
+                
+                token_info = (
+                    f"## {pair.get('tokenBase', {}).get('symbol')} | ${'{:,.4f}'.format(price_usd)}\n"
+                    f"`{pair.get('tokenBase', {}).get('address')}`\n\n"
+                    f"📈 Changes: 5m: {'{:.2f}'.format(pair.get('stats', {}).get('percent', {}).get('5m', 0))}% | "
+                    f"1h: {'{:.2f}'.format(pair.get('stats', {}).get('percent', {}).get('1h', 0))}% | "
+                    f"24h: {'{:.2f}'.format(pair.get('stats', {}).get('percent', {}).get('24h', 0))}%\n"
+                    f"💰 Liquidity: ${'{:,.2f}'.format(liquidity_usd)} | Volume: ${'{:,.2f}'.format(volume_usd)}\n"
+                )
+                
                 pairs.append({
-                    # 'pairId': pair.get('pairId'),
-                    # 'dex': pair.get('dex', {}).get('name'),
+                    'markdown': token_info,
                     'tokenBase': {
                         'address': pair.get('tokenBase', {}).get('address'),
                         'name': pair.get('tokenBase', {}).get('name'),
                         'symbol': pair.get('tokenBase', {}).get('symbol'),
-                        'priceUsd': float(pair.get('tokenBase', {}).get('priceUsd', 0))
+                        'priceUsd': price_usd
                     },
-                    'liquidityUsd': float(pair.get('liquidityUsd', 0)),
-                    'volumeUsd': float(pair.get('volumeUsd', 0)),
+                    'liquidityUsd': liquidity_usd,
+                    'volumeUsd': volume_usd,
                     'priceChange': {
                         '5m': pair.get('stats', {}).get('percent', {}).get('5m', 0),
                         '1h': pair.get('stats', {}).get('percent', {}).get('1h', 0),
@@ -79,7 +94,7 @@ def get_trending_pairs(jwt_token: str = "", resolution: str = "5m", limit: int =
                         '24h': pair.get('stats', {}).get('percent', {}).get('24h', 0)
                     }
                 })
-                
+            
             return {'pairs': pairs}
         else:
             raise Exception(f"Error fetching trending pairs: {response.status_code} - {response.text}")

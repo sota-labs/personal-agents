@@ -19,11 +19,9 @@ from llama_index.core.tools import BaseTool, FunctionTool
 from llama_index.core.tools import BaseTool, ToolOutput
 from utils.output_parser import ReActOutputParser
 from tools import (
-    get_wallet_balance,
     search_token,
-    get_all_positions,
     get_trending_pairs,
-    fetch_top_pair,
+    scan_token,
 )
 
 from prompts.react import REACT_CHAT_SYSTEM_HEADER_CUSTOM
@@ -123,21 +121,12 @@ tools = [
         fn=get_trending_pairs,
         name="get_trending_pairs", 
         description=(
-            "Retrieves a list of trending trading pairs on the market."
+            "Get trending trading pairs on the market."
             """Input args:
                 jwt_token (str): User's authorization token
                 resolution (str, optional): Time frame (default: "5m")
                 limit (int, optional): Maximum number of pairs to return (default: 5)"""
-            "Output: Returns detailed information about trading pairs including:"
-            "- Token information (address, name, symbol, USD price)"
-            "- Liquidity (liquidityUsd)"
-            "- Trading volume (volumeUsd)"
-            "- Price change percentages (5m, 1h, 6h, 24h)"
-            "\nUse this tool when you want to:"
-            "- View trending tokens in the market"
-            "- Analyze market trends"
-            "- Find new trading opportunities"
-            "- Monitor token price movements"
+            "Output: Price, market cap, liquidity, volume and performance metrics"
         ),
     ),
     FunctionTool.from_defaults(
@@ -157,55 +146,15 @@ tools = [
         ),
     ),
     FunctionTool.from_defaults(
-        fn=fetch_top_pair,
-        name="fetch_top_pair",
+        fn=scan_token,
+        name="scan_token",
         description=(
-            "Fetch detailed information about the top trading pair for a specific token and format it in a readable way."
+            "Analyze token's trading metrics."
             """Input args:
-                token_address (str): Token address (e.g., '0x9467...::prez::PREZ')"""
-            "Output: Returns a formatted markdown string with following sections:"
-            "1. Token Identity:"
-            "   - Token name and symbol"
-            "   - Contract address"
-            "2. Platform Information:"
-            "   - DEX name"
-            "   - Token age"
-            "   - Social links"
-            "3. Market Metrics:"
-            "   - Market cap in USD"
-            "   - Liquidity in USD"
-            "   - Current price"
-            "   - All-time high (ATH) price"
-            "4. Time-based Statistics (5M/1H/6H/24H):"
-            "   - Price changes (%)"
-            "   - Trading volume"
-            "   - Buy/Sell transaction counts"
-            "\nUse this tool when you need to:"
-            "- Get a quick overview of a token's market performance"
-            "- Monitor trading activity and price movements"
-            "- Access key market metrics in a human-readable format"
+                token_address (str): Token contract address"""
+            "Output: Price, market cap, liquidity, volume and transaction counts"
         ),
     ),
-    
-    # FunctionTool.from_defaults(
-    #     fn=get_all_positions,
-    #     name="get_all_positions",
-    #     description=(
-    #         "Get all positions from user's wallets. Returns detailed information including:"
-    #         "- Token symbol"
-    #         "- Token name" 
-    #         "- Token contract address"
-    #         "- Token balance"
-    #         "- Wallet address holding the token"
-    #         """Input args:
-    #             jwt_token (str): User's authorization token"""
-    #         "Use this tool when:"
-    #         "- Need an overview of all tokens in wallets"
-    #         "- Want to check balances of multiple tokens at once"
-    #         "- Analyzing investment portfolio"
-    #         "- Preparing for multi-token management"
-    #     ),
-    # ),
 ]
 
 

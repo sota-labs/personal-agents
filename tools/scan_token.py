@@ -8,7 +8,7 @@ import requests
 from typing import Dict, Any, Optional, Tuple, Union
 from config import settings
 
-def fetch_top_pair(token_address: str) -> Optional[Dict[str, Any]]:
+def scan_token(token_address: str) -> Optional[Dict[str, Any]]:
     """
     Fetch detailed information about the top trading pair for a specific token
     
@@ -60,25 +60,22 @@ def fetch_top_pair(token_address: str) -> Optional[Dict[str, Any]]:
         sell_txn = stats.get("sellTxn", {})
         
         # Format the output
-        output = f"{token_name} ({token_symbol})\n"
-        output += f"{token_address}\n\n"
+        output = f"**{token_name} ({token_symbol})**\n"
+        output += f"`{token_address}`\n\n"
         
-        output += f"🏷Platform: {dex_name} | 🕰Age: {age}\n"
-        output += "📱Website | Docs | Twitter | Telegram | Chart\n\n"
+        output += f"**Platform:** {dex_name} | **Age:** {age}\n"
         
         # Convert string values to float for formatting
         mcap = float(data.get('marketCapUsd', '0'))
         liq = float(data.get('liquidityUsd', '0'))
         price = float(base_token.get('priceUsd', '0'))
         
-        output += f"MCap: ${mcap/1000:.2f}K | "
-        output += f"Liq: ${liq:.2f}K\n"
-        output += f"Current Price: ${price:.4f}\n"
-        # TODO: Add ATH info
-        output += "ATH: $9.4275 (103.6x), 1 days ago\n\n"
+        output += f"**MCap:** ${mcap/1000:.2f}K | "
+        output += f"**Liq:** ${liq:.2f}K\n"
+        output += f"**Current Price:** ${price:.8f}\n\n"
         
         # Format time-based stats
-        output += "Time    Price   Volume    Buy/Sell\n"
+        output += "**Time-based Statistics:**\n"
         periods = ["5m", "1h", "6h", "24h"]
         for period in periods:
             price_change = float(percent.get(period, 0))
@@ -86,12 +83,7 @@ def fetch_top_pair(token_address: str) -> Optional[Dict[str, Any]]:
             buys = int(buy_txn.get(period, 0))
             sells = int(sell_txn.get(period, 0))
             
-            output += f"{period.upper():<7} "
-            output += f"{price_change:>6.2f}% "
-            output += f"${vol/1000:.2f}K ".rjust(10)
-            output += f"{buys}/{sells}".rjust(8) + "\n"
-        
-        # output += f"Chart: /c_{data.get('slug', '')}"
+            output += f"**{period.upper()}:** Price {price_change:>6.2f}% | Vol ${vol/1000:.2f}K | Txns {buys}/{sells}\n"
         
         return output
         
