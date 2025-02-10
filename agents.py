@@ -23,13 +23,14 @@ from tools import (
     search_token,
     get_all_positions,
     get_trending_pairs,
+    fetch_top_pair,
 )
 
 from prompts.react import REACT_CHAT_SYSTEM_HEADER_CUSTOM
 from LLM.llm_settings_manager import LLMSettingsManager
 
 llm_manager = LLMSettingsManager()
-llm = llm_manager.get_llm("gemini", model="models/gemini-1.5-pro")
+llm = llm_manager.get_llm("gemini", model="models/gemini-2.0-flash")
 
 class CustomReActChatFormatter(ReActChatFormatter):
     """ReAct chat formatter."""
@@ -119,24 +120,6 @@ react_system_prompt = PromptTemplate(REACT_CHAT_SYSTEM_HEADER_CUSTOM)
 
 tools = [
     FunctionTool.from_defaults(
-        fn=get_wallet_balance,
-        name="get_wallet_balance",
-        description=(
-            "Retrieves wallet addresses and their current balances for a given user."
-            """Input args: 
-                jwt_token (str): User's authorization token"""
-            "Returns:"
-            "- List of wallet addresses owned by the user"
-            "- Current SUI balance for each wallet"
-            "- Total balance across all wallets"
-            "\nUse this tool when you need to:"
-            "- Check available SUI balance before executing trades"
-            "- Verify which wallet has sufficient funds"
-            "- Get an overview of user's total holdings in SUI"
-            "- Select appropriate wallet for transactions"
-        ),
-    ),
-    FunctionTool.from_defaults(
         fn=get_trending_pairs,
         name="get_trending_pairs", 
         description=(
@@ -173,6 +156,37 @@ tools = [
             "- Liquidity (liquidityUsd)"
         ),
     ),
+    FunctionTool.from_defaults(
+        fn=fetch_top_pair,
+        name="fetch_top_pair",
+        description=(
+            "Fetch detailed information about the top trading pair for a specific token and format it in a readable way."
+            """Input args:
+                token_address (str): Token address (e.g., '0x9467...::prez::PREZ')"""
+            "Output: Returns a formatted markdown string with following sections:"
+            "1. Token Identity:"
+            "   - Token name and symbol"
+            "   - Contract address"
+            "2. Platform Information:"
+            "   - DEX name"
+            "   - Token age"
+            "   - Social links"
+            "3. Market Metrics:"
+            "   - Market cap in USD"
+            "   - Liquidity in USD"
+            "   - Current price"
+            "   - All-time high (ATH) price"
+            "4. Time-based Statistics (5M/1H/6H/24H):"
+            "   - Price changes (%)"
+            "   - Trading volume"
+            "   - Buy/Sell transaction counts"
+            "\nUse this tool when you need to:"
+            "- Get a quick overview of a token's market performance"
+            "- Monitor trading activity and price movements"
+            "- Access key market metrics in a human-readable format"
+        ),
+    ),
+    
     # FunctionTool.from_defaults(
     #     fn=get_all_positions,
     #     name="get_all_positions",

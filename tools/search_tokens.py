@@ -6,7 +6,6 @@ sys.path.insert(0, str(project_root))
 
 import requests
 from config import settings
-from tools.get_positions import get_all_positions
 
 def search_token(query: str, jwt_token: str) -> dict:
     """
@@ -28,12 +27,6 @@ def search_token(query: str, jwt_token: str) -> dict:
         Exception: If search operation fails with status code and error message
     """
     
-    try:
-        positions = get_all_positions(jwt_token)
-    except Exception as e:
-        positions = []
-        print(f"Error getting positions: {str(e)}")
-    
     url = f"{settings.raiden.api_common_url}/api/v1/search"
     headers = {
         "accept": "application/json"
@@ -42,7 +35,7 @@ def search_token(query: str, jwt_token: str) -> dict:
     params = {
         "search": query,
         "page": 1,
-        "limit": 5
+        "limit": 10
     }
     response = requests.get(url, headers=headers, params=params)
     
@@ -50,23 +43,26 @@ def search_token(query: str, jwt_token: str) -> dict:
         data = response.json()
         results = []
         for doc in data.get('docs', []):
-            liquidityUsd = float(doc.get('liquidityUsd', 0))
+            try:
+                liquidityUsd = float(doc.get('liquidityUsd', 0))
+            except (ValueError, TypeError):
+                liquidityUsd = 0
+                
             token_info = doc.get('tokenBase', {})
-            position_token_addresses = [pos['token_address'] for pos in positions]
-            if liquidityUsd > 10000 or token_info.get('address') in position_token_addresses:
+            if liquidityUsd > 0:
                 results.append({
-                    'address': token_info.get('address'),
-                    'name': token_info.get('name'),
-                    'symbol': token_info.get('symbol'),
-                    'priceUsd': token_info.get('priceUsd'),
-                    'liquidityUsd': liquidityUsd
+                    'token_address': token_info.get('address'),
+                    'token_name': token_info.get('name'),
+                    'token_symbol': token_info.get('symbol'),
+                    'token_priceUsd': token_info.get('priceUsd'),
+                    'token_liquidityUsd': liquidityUsd
                 })
                 
         if not results:
             return f'No tokens found for {query}'
         
-        results.sort(key=lambda x: float(x['liquidityUsd'] or 0), reverse=True)
-        return {'tokens': results[0:5]}
+        results.sort(key=lambda x: x['token_liquidityUsd'], reverse=True)
+        return {'tokens': results[0:10]}
     else:
         raise Exception(f"Error searching tokens: {response.status_code} - {response.text}")
 
