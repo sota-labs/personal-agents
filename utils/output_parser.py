@@ -110,6 +110,11 @@ class ReActOutputParser(BaseOutputParser):
                 is_streaming=is_streaming,
             )
             
+            
+        # An "Action" should take priority over an "Answer"
+        if "Action:" in output and "Action: None" not in output:
+            return parse_action_reasoning_step(output)
+            
         if "Answer:" in output or "Action: None" in output:
             thought, answer = extract_final_response(output)
             return ResponseReasoningStep(
