@@ -34,6 +34,13 @@ def get_trending_pairs(jwt_token: str = "", resolution: str = "5m", limit: int =
                     - 24h (float): 24-hour change
     """
     try:
+        if limit <= 0:
+            limit = 5
+            
+        valid_resolutions = ["5m", "1h", "6h", "24h"]
+        if resolution not in valid_resolutions:
+            resolution = "24h"
+            
         url = f"{settings.raiden.api_common_url}/api/v1/sui/pairs/trending"
         
         params = {

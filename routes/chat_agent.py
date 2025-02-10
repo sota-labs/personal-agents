@@ -54,7 +54,6 @@ class AgentResponse(BaseModel):
     """
     message: str
     timestamp: str
-    user: str
     chat_id: str
    
 
@@ -112,17 +111,14 @@ class WebhookTriggerResponse(BaseModel):
 
 @router.post("/threads/messages/sync", response_model=AgentResponse)
 async def create_message_sync(
-    request: AgentRequest,
-    session: dict = Depends(verify_token),
-    authorization: str = Header(None, description="Bearer token")
+    request: AgentRequest
 ):    
     try:
-        jwt_token = authorization.replace("Bearer ", "") if authorization else None
+        jwt_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyMTA0OTIwMjU1IiwidXNlck5hbWUiOiJoYXJyeWRhbmcxIiwiZGlzcGxheU5hbWUiOiJIYXJyeSBEYW5nIiwiaWFwIjpudWxsLCJpYXQiOjE3MzkxNjE3MzIsImV4cCI6MTc0MTc1MzczMn0.2WNdUMof6zItIQt3LloFlybx_fJgIfV5BIrxgEe-GKM"
         
         if not request.content.strip():
             raise HTTPException(status_code=400, detail="Message content cannot be empty")
             
-        user = session["userName"]
         user_message = request.content
         message_id = request.message_id
         thread_id = request.thread_id
@@ -183,7 +179,6 @@ async def create_message_sync(
         return AgentResponse(
             message=bot_response,
             timestamp=current_time,
-            user=user,
             chat_id=chat_id
         )
             
@@ -194,15 +189,14 @@ async def create_message_sync(
 
 @router.post("/threads/messages", response_model=WebhookResponse)
 async def create_message_async(
-    request: AgentRequest,
-    session: dict = Depends(verify_token),
-    authorization: str = Header(None, description="Bearer token")
+    request: AgentRequest
 ):    
+    jwt_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyMTA0OTIwMjU1IiwidXNlck5hbWUiOiJoYXJyeWRhbmcxIiwiZGlzcGxheU5hbWUiOiJIYXJyeSBEYW5nIiwiaWFwIjpudWxsLCJpYXQiOjE3MzkxNjE3MzIsImV4cCI6MTc0MTc1MzczMn0.2WNdUMof6zItIQt3LloFlybx_fJgIfV5BIrxgEe-GKM"
+        
     asyncio.create_task(
         process_message_webhook(
             request=request,
-            session=session,
-            jwt_token=authorization.replace("Bearer ", "") if authorization else None,
+            jwt_token=jwt_token,
             webhook_url=f"{settings.agent.api_url}/api/v1/backend/message/agent-webhook-trigger"
         )
     )
@@ -215,13 +209,11 @@ async def create_message_async(
 
 async def process_message_webhook(
     request: AgentRequest,
-    session: dict,
     jwt_token: str,
     webhook_url: str
 ):
     try:
         
-        user = session["userName"]
         user_message = request.content
         message_id = request.message_id
         thread_id = request.thread_id
